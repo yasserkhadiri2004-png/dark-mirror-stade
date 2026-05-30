@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Dark Mirror — Stade Moulay Abdellah</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#000; color:#00ccff; font-family:'Courier New',monospace; overflow:hidden; height:100vh; width:100vw; }
+
+    /* ── VEILLE ── */
+    #veille { position:fixed; inset:0; z-index:100; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 1s ease; }
+    #veille.cache { opacity:0; pointer-events:none; }
+    #veille-logo { font-size:48px; letter-spacing:8px; color:#001a2e; text-transform:uppercase; animation:pulse 3s infinite; }
+    #veille-sub { font-size:11px; color:#000d1a; letter-spacing:6px; margin-top:16px; text-transform:uppercase; }
+    #veille-scan { position:absolute; top:0; left:0; right:0; height:3px; background:rgba(0,100,200,0.3); animation:scan 4s linear infinite; }
+    @keyframes scan  { 0%{top:0} 100%{top:100%} }
+    @keyframes pulse { 0%,100%{color:#001a2e} 50%{color:#003355} }
+
+    /* ── ACTIVATION ── */
+    #activation { position:fixed; inset:0; z-index:90; background:#000; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+    #activation.actif { opacity:1; }
+    #activation-ring { width:200px; height:200px; border:2px solid #00ccff; border-radius:50%; }
+    @keyframes expandRing { 0%{transform:scale(0);opacity:1} 100%{transform:scale(8);opacity:0} }
+
+    /* ── MAIN ── */
+    #main-ui { position:fixed; inset:0; z-index:10; opacity:0; pointer-events:none; transition:opacity 1s ease; }
+    #main-ui.actif { opacity:1; pointer-events:all; }
+    #canvas-container { position:fixed; inset:0; z-index:0; }
+    #overlay { position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,100,200,0.015) 3px,rgba(0,100,200,0.015) 6px); z-index:10; }
+    #clock { position:fixed; top:20px; left:20px; font-size:26px; letter-spacing:4px; color:#00ffcc; z-index:20; }
+
+    /* ── PANNEAU INFO ── */
+    #info-panel { position:fixed; top:60px; right:20px; width:260px; background:rgba(0,8,24,0.92); border:1px solid #001833; border-radius:8px; padding:16px; z-index:20; }
+    .label  { font-size:8px; color:#002844; letter-spacing:3px; margin-bottom:3px; margin-top:10px; }
+    .value  { font-size:12px; color:#00ccff; line-height:1.4; }
+    .value-big { font-size:22px; }
+    .sep    { height:1px; background:#001833; margin:8px 0; }
+
+    /* ── ÉQUIPE BANNER ── */
+    #equipe-banner { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:rgba(0,8,24,0.92); border:1px solid #001833; border-radius:8px; padding:10px 24px; text-align:center; z-index:20; display:none; }
+    #equipe-drapeau { font-size:28px; }
+    #equipe-nom     { font-size:14px; color:#00ffcc; font-weight:bold; letter-spacing:2px; }
+    #equipe-surnom  { font-size:9px; color:#005577; letter-spacing:1px; margin-top:2px; }
+
+    /* ── LABELS GESTES ── */
+    #gesture-label { position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); font-size:26px; letter-spacing:4px; color:#00ffcc; z-index:25; opacity:0; transition:opacity 0.5s; pointer-events:none; text-shadow:0 0 30px #00ffcc88; }
+    #anim-label    { position:fixed; bottom:80px; left:20px; font-size:8px; color:#001e38; letter-spacing:2px; z-index:20; }
+    #loading       { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); font-size:11px; letter-spacing:3px; color:#005577; z-index:30; display:none; }
+
+    /* ════════════════════════════════════════════
+       BOUTON MICRO + CHAT VOCAL
+    ════════════════════════════════════════════ */
+
+    /* Bouton micro flottant */
+    #btn-mic {
+      position: fixed;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 204, 255, 0.35);
+      background: rgba(0, 8, 24, 0.92);
+      color: #00ccff;
+      font-size: 26px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .25s;
+      backdrop-filter: blur(8px);
+    }
+    #btn-mic:hover {
+      border-color: #00ccff;
+      box-shadow: 0 0 18px rgba(0,204,255,.4);
+    }
+    #btn-mic.recording {
+      background: rgba(0, 80, 30, 0.95);
+      border-color: #00ff88;
+      color: #00ff88;
+      box-shadow: 0 0 0 0 rgba(0,255,136,.6);
+      animation: mic-pulse 1.1s ease-out infinite;
+    }
+    @keyframes mic-pulse {
+      0%   { box-shadow: 0 0 0 0   rgba(0,255,136,.6); }
+      70%  { box-shadow: 0 0 0 18px rgba(0,255,136,0); }
+      100% { box-shadow: 0 0 0 0   rgba(0,255,136,0); }
+    }
+    #btn-mic.recording::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0,255,136,.4);
+      animation: ring-exp .9s linear infinite;
+    }
+    @keyframes ring-exp {
+      from { transform:scale(1); opacity:.7; }
+      to   { transform:scale(1.8); opacity:0; }
+    }
+
+    /* Label status micro */
+    #mic-status {
+      position: fixed;
+      bottom: 196px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #003344;
+      z-index: 50;
+      white-space: nowrap;
+      text-transform: uppercase;
+      transition: color .3s;
+    }
+    #mic-status.active { color: #00ff88; text-shadow: 0 0 8px #00ff8866; }
+
+    /* Bulle de conversation */
+    #chat-bubble {
+      position: fixed;
+      bottom: 210px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 520px;
+      width: 90vw;
+      background: rgba(0,8,24,0.95);
+      border: 1px solid #001833;
+      border-radius: 12px;
+      padding: 14px 18px;
+      z-index: 50;
+      display: none;
+      backdrop-filter: blur(10px);
+    }
+    #chat-bubble.visible { display: block; animation: fadeUp .3s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateX(-50%) translateY(10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+    .chat-q {
+      font-size: 10px;
+      color: #005577;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .chat-q span { color: #00ffcc; }
+
+    .chat-r {
+      font-size: 13px;
+      color: #00ccff;
+      line-height: 1.6;
+    }
+
+    /* Typing dots */
+    .typing { display:flex; gap:5px; align-items:center; padding:4px 0; }
+    .typing span {
+      width:6px; height:6px; border-radius:50%;
+      background:#003344;
+      animation:tdot .8s infinite;
+    }
+    .typing span:nth-child(2){animation-delay:.15s;}
+    .typing span:nth-child(3){animation-delay:.30s;}
+    @keyframes tdot { 0%,80%,100%{transform:scale(.7);opacity:.4} 40%{transform:scale(1);opacity:1} }
+
+    /* Avatar parlant : anneau lumineux */
+    #avatar-speaking-ring {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      pointer-events: none;
+      z-index: 15;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    #avatar-speaking-ring.on {
+      border-color: #00ccff;
+      box-shadow: 0 0 24px rgba(0,204,255,.5);
+      animation: glow-ring 1.2s ease-in-out infinite;
+    }
+    @keyframes glow-ring {
+      0%,100% { box-shadow: 0 0 14px rgba(0,204,255,.4); }
+      50%      { box-shadow: 0 0 40px rgba(0,204,255,.8), 0 0 60px rgba(0,204,255,.2); }
+    }
+
+    /* ── BARRE BASSE ── */
+    #status-bar { position:fixed; bottom:0; left:0; right:0; background:rgba(0,3,10,0.95); border-top:1px solid #001833; padding:10px 20px; display:flex; gap:12px; align-items:center; z-index:20; }
+    #ticket-input { flex:1; background:rgba(0,8,24,0.95); border:1px solid #002040; color:#00ffcc; padding:8px 14px; font-family:'Courier New',monospace; font-size:14px; letter-spacing:3px; border-radius:4px; outline:none; }
+    #ticket-input::placeholder { color: #002040; }
+    .btn { background:#001e44; border:1px solid #0044aa; color:#00ccff; padding:8px 16px; font-family:monospace; font-size:9px; letter-spacing:2px; border-radius:4px; cursor:pointer; transition: filter .2s; }
+    .btn:hover { filter:brightness(1.4); }
+  </style>
+</head>
+<body>
+
+<!-- ═══ VEILLE ═══ -->
+<div id="veille">
+  <div id="veille-scan"></div>
+  <div id="veille-logo">◈ DARK MIRROR</div>
+  <div id="veille-sub">Stade Moulay Abdellah · Rabat</div>
+</div>
+
+<!-- ═══ ACTIVATION ═══ -->
+<div id="activation">
+  <div id="activation-ring"></div>
+</div>
+
+<!-- ═══ MAIN UI ═══ -->
+<div id="main-ui">
+  <div id="canvas-container"></div>
+  <div id="overlay"></div>
+  <div id="clock">--:--:--</div>
+  <div id="loading">CHARGEMENT...</div>
+  <div id="gesture-label"></div>
+  <div id="anim-label">—</div>
+
+  <!-- Équipe -->
+  <div id="equipe-banner">
+    <div id="equipe-drapeau">🏳️</div>
+    <div id="equipe-nom">—</div>
+    <div id="equipe-surnom">—</div>
+  </div>
+
+  <!-- Infos visiteur -->
+  <div id="info-panel">
+    <div class="label">GENRE</div>
+    <div class="value" id="genre-val">—</div>
+    <div class="sep"></div>
+    <div class="label">ÉQUIPE</div>
+    <div class="value" id="maillot-val">—</div>
+    <div class="label">DRAPEAU</div>
+    <div class="value value-big" id="drapeau-val">—</div>
+    <div class="label">SURNOM</div>
+    <div class="value" id="surnom-val">—</div>
+    <div class="sep"></div>
+    <div class="label">ZONE</div>
+    <div class="value" id="zone-val">—</div>
+    <div class="label">PARKING</div>
+    <div class="value" id="parking-val">—</div>
+    <div class="label">BUVETTE</div>
+    <div class="value" id="buvette-val">—</div>
+    <div class="label">ENTRÉE</div>
+    <div class="value" id="porte-val">—</div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       ZONE MICRO + CHAT
+  ════════════════════════════════════════ -->
+
+  <!-- Anneau avatar parlant -->
+  <div id="avatar-speaking-ring"></div>
+
+  <!-- Bulle de conversation -->
+  <div id="chat-bubble">
+    <div class="chat-q">QUESTION : <span id="chat-question">—</span></div>
+    <div class="chat-r" id="chat-reponse">
+      <div class="typing"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- Statut micro -->
+  <div id="mic-status">CLIQUER POUR PARLER</div>
+
+  <!-- 🎤 Bouton micro -->
+  <button id="btn-mic" onclick="toggleMicro()" title="Parler à l'assistant">🎤</button>
+
+  <!-- Barre basse -->
+  <div id="status-bar">
+    <input id="ticket-input" placeholder="Code ticket : A101 · B203 · VIP01 ..." maxlength="8"
+           onkeydown="if(event.key==='Enter') validerTicket()"/>
+    <button class="btn" onclick="validerTicket()">VALIDER ▶</button>
+    <button class="btn" onclick="resetSystem()">✕ RESET</button>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════
+     THREE.JS
+═════════════════════════════════════════════ -->
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/"}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── Scène ──────────────────────────────────────
+const scene    = new THREE.Scene();
+scene.background = new THREE.Color(0x000812);
+scene.fog        = new THREE.Fog(0x000812, 12, 28);
+
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0, 1.0, 5.0);
+camera.lookAt(0, 1.0, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1.0, 0);
+controls.enableDamping = true;
+controls.minDistance = 1;
+controls.maxDistance = 12;
+
+// Lumières
+scene.add(new THREE.AmbientLight(0xffffff, 2.5));
+const kL = new THREE.DirectionalLight(0x88ccff, 3.5);
+kL.position.set(2,5,4); kL.castShadow=true; scene.add(kL);
+const rL = new THREE.DirectionalLight(0x0033ff, 2);
+rL.position.set(-3,3,-2); scene.add(rL);
+const fL = new THREE.DirectionalLight(0x00aaff, 1.5);
+fL.position.set(0,2,6); scene.add(fL);
+const gL = new THREE.PointLight(0x00ccff, 2, 6);
+gL.position.set(0,0.2,0); scene.add(gL);
+
+// Sol
+scene.add(new THREE.GridHelper(10, 28, 0x001833, 0x000d22));
+const ringMat = new THREE.MeshBasicMaterial({color:0x00ccff,transparent:true,opacity:0.15,side:THREE.DoubleSide});
+const ring = new THREE.Mesh(new THREE.RingGeometry(0.5,1.1,64), ringMat);
+ring.rotation.x=-Math.PI/2; ring.position.set(0,0.01,0); scene.add(ring);
+
+// Particules
+const ptGeo = new THREE.BufferGeometry();
+const ptArr = new Float32Array(180*3);
+for(let i=0;i<180;i++){ ptArr[i*3]=(Math.random()-0.5)*10; ptArr[i*3+1]=Math.random()*6; ptArr[i*3+2]=(Math.random()-0.5)*10; }
+ptGeo.setAttribute('position',new THREE.BufferAttribute(ptArr,3));
+const pts = new THREE.Points(ptGeo, new THREE.PointsMaterial({color:0x0055aa,size:0.03,transparent:true,opacity:0}));
+scene.add(pts);
+
+// ── État ──────────────────────────────────────
+const PHASES = { VEILLE:'veille', ACTIVATION:'activation', ATTENTE:'attente' };
+let phase        = PHASES.VEILLE;
+let avatarActuel = null;
+let mixerActuel  = null;
+let genreActuel  = null;
+let animEnCours  = '';
+let timerVeille  = null;
+let etat         = { genre:null, equipe:null, maillot:null, souriant:false };
+const TIMEOUT_VEILLE = 15000;
+const loader = new GLTFLoader();
+
+// ── Phases ────────────────────────────────────
+function entrerPhase(p) {
+  phase = p;
+  if(p === PHASES.VEILLE) {
+    document.getElementById('main-ui').classList.remove('actif');
+    document.getElementById('veille').classList.remove('cache');
+    document.getElementById('equipe-banner').style.display = 'none';
+    if(avatarActuel){ scene.remove(avatarActuel); avatarActuel=null; }
+    mixerActuel = null;
+    pts.material.opacity = 0;
+    genreActuel = null;
+    etat = { genre:null, equipe:null, maillot:null, souriant:false };
+    ['genre-val','maillot-val','drapeau-val','surnom-val','zone-val','parking-val','buvette-val','porte-val']
+      .forEach(id => document.getElementById(id).textContent = '—');
+    masquerBulle();
+
+  } else if(p === PHASES.ACTIVATION) {
+    document.getElementById('veille').classList.add('cache');
+    const act  = document.getElementById('activation');
+    const oldR = act.querySelector('#activation-ring');
+    const newR = oldR.cloneNode(true);
+    newR.style.animation = 'expandRing 1.5s ease-out forwards';
+    oldR.replaceWith(newR);
+    act.classList.add('actif');
+    setTimeout(() => {
+      act.classList.remove('actif');
+      document.getElementById('main-ui').classList.add('actif');
+      pts.material.opacity = 0.5;
+      phase = PHASES.ATTENTE;
+      chargerAvatar(genreActuel || 'homme', () => {
+        jouerGeste('wave');
+        setTimeout(() => jouerGeste('idle'), 4000);
+      });
+    }, 1500);
+  }
+}
+
+// ── Avatar ────────────────────────────────────
+function ajusterAvatar(obj) {
+  const box    = new THREE.Box3().setFromObject(obj);
+  const size   = new THREE.Vector3();
+  const center = new THREE.Vector3();
+  box.getSize(size); box.getCenter(center);
+  const s = 1.7 / Math.max(size.x, size.y, size.z);
+  obj.scale.set(s,s,s);
+  obj.position.x = -center.x*s;
+  obj.position.z = -center.z*s;
+  const box2 = new THREE.Box3().setFromObject(obj);
+  obj.position.y = -box2.min.y;
+}
+
+function chargerAvatar(genre, cb) {
+  const p  = genre === 'femme' ? 'avatar_femme' : 'avatar_homme';
+  const el = document.getElementById('loading');
+  el.style.display = 'block';
+  loader.load(`/static/${p}_idle.glb`,
+    (gltf) => {
+      if(avatarActuel){ scene.remove(avatarActuel); avatarActuel=null; }
+      mixerActuel = null;
+      const obj = gltf.scene;
+      ajusterAvatar(obj);
+      obj.traverse(c=>{if(c.isMesh){c.castShadow=true;c.receiveShadow=true;}});
+      scene.add(obj); avatarActuel=obj;
+      el.style.display='none';
+      if(gltf.animations.length > 0){
+        mixerActuel = new THREE.AnimationMixer(obj);
+        mixerActuel.clipAction(gltf.animations[0]).reset().play();
+      }
+      if(cb) cb();
+    },
+    null,
+    () => { el.style.display='none'; }
+  );
+}
+
+function chargerEtJouer(fichier, nomAnim, duree, cb) {
+  document.getElementById('loading').style.display='block';
+  loader.load(fichier,
+    (gltf) => {
+      if(avatarActuel){ scene.remove(avatarActuel); avatarActuel=null; }
+      mixerActuel=null;
+      const obj=gltf.scene; ajusterAvatar(obj);
+      obj.traverse(c=>{if(c.isMesh){c.castShadow=true;c.receiveShadow=true;}});
+      scene.add(obj); avatarActuel=obj; animEnCours=nomAnim;
+      document.getElementById('loading').style.display='none';
+      document.getElementById('anim-label').textContent=`ANIMATION : ${nomAnim.toUpperCase()}`;
+      if(gltf.animations.length>0){
+        mixerActuel=new THREE.AnimationMixer(obj);
+        mixerActuel.clipAction(gltf.animations[0]).reset().play();
+      }
+      afficherLabel(LABELS[nomAnim]||'');
+      if(duree>0&&cb) setTimeout(cb,duree);
+    },
+    null,
+    () => { document.getElementById('loading').style.display='none'; }
+  );
+}
+
+const LABELS = { wave:'BIENVENUE !', point:'PAR ICI →', happy:'SUPER !', idle:'' };
+
+function jouerGeste(type) {
+  const p = genreActuel === 'femme' ? 'avatar_femme' : 'avatar_homme';
+  const f = {
+    idle:  `/static/${p}_idle.glb`,
+    wave:  `/static/${p}_wave.glb`,
+    point: `/static/${p}_point.glb`,
+    happy: `/static/${p}_happy.glb`
+  };
+  if(type==='idle') chargerEtJouer(f.idle,'idle',0,null);
+  else chargerEtJouer(f[type]||f.idle, type, 4000, ()=>jouerGeste('idle'));
+}
+
+function afficherLabel(texte) {
+  if(!texte) return;
+  const el = document.getElementById('gesture-label');
+  el.textContent=texte; el.style.opacity='1';
+  setTimeout(()=>el.style.opacity='0', 2500);
+}
+
+// Expose pour le JS non-module
+window._jouerGeste    = jouerGeste;
+window._afficherLabel = afficherLabel;
+
+// ── Polling état caméra ───────────────────────
+async function pollEtat() {
+  try {
+    const data = await fetch('/api/etat').then(r=>r.json());
+
+    if(data.genre !== null && data.genre !== undefined) {
+      if(phase === PHASES.VEILLE) {
+        genreActuel = data.genre;
+        entrerPhase(PHASES.ACTIVATION);
+        return;
+      }
+      if(data.genre !== etat.genre && phase === PHASES.ATTENTE) {
+        etat.genre  = data.genre;
+        genreActuel = data.genre;
+        document.getElementById('genre-val').textContent =
+          data.genre === 'homme' ? '👨 HOMME' : '👩 FEMME';
+        chargerAvatar(data.genre, ()=>jouerGeste('idle'));
+      }
+      if(data.souriant && !etat.souriant && animEnCours==='idle') jouerGeste('happy');
+      if(!data.souriant && etat.souriant && animEnCours==='happy') jouerGeste('idle');
+      if(timerVeille){ clearTimeout(timerVeille); timerVeille=null; }
+      timerVeille = setTimeout(()=>entrerPhase(PHASES.VEILLE), TIMEOUT_VEILLE);
+    } else {
+      if(phase !== PHASES.VEILLE && !timerVeille)
+        timerVeille = setTimeout(()=>entrerPhase(PHASES.VEILLE), TIMEOUT_VEILLE);
+    }
+
+    if(data.equipe && data.equipe !== etat.equipe) {
+      etat.equipe = data.equipe;
+      document.getElementById('maillot-val').textContent  = data.maillot||'—';
+      document.getElementById('drapeau-val').textContent  = data.drapeau||'—';
+      document.getElementById('surnom-val').textContent   = data.surnom ||'—';
+      document.getElementById('equipe-drapeau').textContent = data.drapeau||'—';
+      document.getElementById('equipe-nom').textContent     = data.maillot||'—';
+      document.getElementById('equipe-surnom').textContent  = data.surnom ||'—';
+      document.getElementById('equipe-banner').style.display = 'block';
+      if(data.couleur){
+        const hex = parseInt(data.couleur.replace('#',''),16);
+        gL.color      = new THREE.Color(hex);
+        ringMat.color = new THREE.Color(hex);
+      }
+    }
+    etat = {...etat, ...data};
+  } catch(e){ console.error('pollEtat:', e); }
+}
+setInterval(pollEtat, 800);
+
+// ── Ticket ────────────────────────────────────
+window.validerTicket = async function() {
+  const code = document.getElementById('ticket-input').value.trim().toUpperCase();
+  if(!code) return;
+  try {
+    const data = await fetch(`/api/ticket/${code}`).then(r=>r.json());
+    if(data){
+      document.getElementById('zone-val').textContent    = data.zone    ||'—';
+      document.getElementById('parking-val').textContent = data.parking ||'—';
+      document.getElementById('buvette-val').textContent = data.buvette ||'—';
+      document.getElementById('porte-val').textContent   = data.porte   ||'—';
+      if(window._jouerGeste) window._jouerGeste('point');
+    } else {
+      if(window._afficherLabel) window._afficherLabel('TICKET INVALIDE ✕');
+    }
+  } catch(e){ console.error(e); }
+};
+
+window.resetSystem = function() {
+  ['zone-val','parking-val','buvette-val','porte-val']
+    .forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('ticket-input').value='';
+  document.getElementById('equipe-banner').style.display='none';
+  if(window._jouerGeste) window._jouerGeste('wave');
+  masquerBulle();
+};
+
+// ── Horloge ───────────────────────────────────
+setInterval(()=>{
+  const n=new Date(), p=v=>String(v).padStart(2,'0');
+  document.getElementById('clock').textContent=
+    `${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+},1000);
+
+// ── Boucle rendu ──────────────────────────────
+const clock3 = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = clock3.getDelta();
+  if(mixerActuel) mixerActuel.update(dt);
+  controls.update();
+  pts.rotation.y += 0.001;
+  const t = Date.now()*0.001;
+  ring.material.opacity  = 0.1 + Math.sin(t*1.5)*0.08;
+  gL.intensity           = 1.5 + Math.sin(t*2)*0.5;
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize',()=>{
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+
+
+<!-- ═════════════════════════════════════════════
+     ASSISTANT VOCAL (non-module pour accès global)
+═════════════════════════════════════════════ -->
+<script>
+// ── État micro ────────────────────────────────
+let isRecording   = false;
+let recognition   = null;
+let currentAudio  = null;
+
+// ── Helpers UI ────────────────────────────────
+function setMicState(active) {
+  isRecording = active;
+  const btn = document.getElementById('btn-mic');
+  const lbl = document.getElementById('mic-status');
+  btn.className   = active ? 'recording' : '';
+  btn.textContent = active ? '⏹' : '🎤';
+  lbl.className   = active ? 'active' : '';
+  lbl.textContent = active ? 'ÉCOUTE EN COURS...' : 'CLIQUER POUR PARLER';
+}
+
+function setAvatarSpeaking(on) {
+  document.getElementById('avatar-speaking-ring').className =
+    on ? 'on' : '';
+}
+
+function afficherBulle(question, reponseHtml) {
+  const b = document.getElementById('chat-bubble');
+  document.getElementById('chat-question').textContent = question || '…';
+  document.getElementById('chat-reponse').innerHTML    = reponseHtml;
+  b.classList.add('visible');
+  // Masquer après 12s
+  clearTimeout(window._bulleTimer);
+  window._bulleTimer = setTimeout(masquerBulle, 12000);
+}
+
+function afficherTyping(question) {
+  afficherBulle(question,
+    '<div class="typing"><span></span><span></span><span></span></div>');
+}
+
+function masquerBulle() {
+  document.getElementById('chat-bubble').classList.remove('visible');
+}
+
+// ── Toggle micro ──────────────────────────────
+window.toggleMicro = function() {
+  if(isRecording) { stopMicro(); }
+  else            { startMicro(); }
+};
+
+function startMicro() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) {
+    document.getElementById('mic-status').textContent = 'NAVIGATEUR NON SUPPORTÉ';
+    return;
+  }
+  recognition = new SR();
+  recognition.lang            = 'fr-FR';
+  recognition.interimResults  = true;
+  recognition.maxAlternatives = 1;
+
+  setMicState(true);
+
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results)
+      .map(r => r[0].transcript).join('');
+
+    // Mise à jour en direct dans la bulle
+    document.getElementById('chat-question').textContent = transcript || '…';
+    document.getElementById('chat-bubble').classList.add('visible');
+
+    if(e.results[e.results.length-1].isFinal) {
+      recognition.stop();
+      setMicState(false);
+      envoyerQuestion(transcript);
+    }
+  };
+
+  recognition.onerror = (e) => {
+    setMicState(false);
+    document.getElementById('mic-status').textContent =
+      e.error === 'not-allowed'
+        ? 'MICRO REFUSÉ — AUTORISER DANS LE NAVIGATEUR'
+        : `ERREUR : ${e.error.toUpperCase()}`;
+    setTimeout(()=>{
+      document.getElementById('mic-status').textContent = 'CLIQUER POUR PARLER';
+    }, 3000);
+  };
+
+  recognition.onend = () => { setMicState(false); };
+  recognition.start();
+}
+
+function stopMicro() {
+  if(recognition) { recognition.stop(); recognition=null; }
+  setMicState(false);
+}
+
+// ── Envoyer question au backend ───────────────
+async function envoyerQuestion(texte) {
+  if(!texte.trim()) return;
+  afficherTyping(texte);
+
+  // Animation avatar "réfléchit"
+  if(window._jouerGeste) window._jouerGeste('idle');
+
+  try {
+    const r    = await fetch('/api/voice', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ texte })
+    });
+    const data = await r.json();
+
+    if(data && data.texte) {
+      afficherBulle(texte, data.texte);
+
+      // Jouer la voix ElevenLabs
+      if(data.audio_url) {
+        jouerReponse(data.audio_url);
+      }
+
+      // Animation "point" si mention d'une direction
+      const rep = data.texte.toLowerCase();
+      if(rep.includes('entrée')||rep.includes('porte')||rep.includes('par ici')) {
+        if(window._jouerGeste) window._jouerGeste('point');
+      } else if(rep.includes('bienvenue')||rep.includes('bonjour')) {
+        if(window._jouerGeste) window._jouerGeste('wave');
+      }
+    } else {
+      afficherBulle(texte, 'Désolé, je n\'ai pas pu répondre. Réessayez.');
+    }
+  } catch(err) {
+    afficherBulle(texte, 'Erreur de connexion avec le serveur.');
+    console.error('[Voice]', err);
+  }
+}
+
+// ── Jouer audio ElevenLabs ────────────────────
+function jouerReponse(url) {
+  if(currentAudio) { currentAudio.pause(); currentAudio=null; }
+  setAvatarSpeaking(true);
+  currentAudio = new Audio(url);
+  currentAudio.play().catch(e => console.warn('[Audio]', e));
+  currentAudio.onended = () => {
+    setAvatarSpeaking(false);
+    currentAudio = null;
+    if(window._jouerGeste) window._jouerGeste('idle');
+  };
+}
+</script>
+
+</body>
+</html>

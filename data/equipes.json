@@ -1,0 +1,194 @@
+{
+  "maroc": {
+    "nom": "Maroc",
+    "couleurs_hsv": {
+      "principale": [[0, 150, 100], [10, 255, 255]],
+      "secondaire": [[55, 100, 100], [75, 255, 255]]
+    },
+    "couleur_hex": "#C1272D",
+    "couleur_secondaire": "#006233",
+    "drapeau": "🇲🇦",
+    "emoji": "⭐",
+    "surnom": "Lions de l'Atlas"
+  },
+  "france": {
+    "nom": "France",
+    "couleurs_hsv": {
+      "principale": [[100, 150, 100], [130, 255, 255]],
+      "secondaire": [[0, 150, 100], [10, 255, 255]]
+    },
+    "couleur_hex": "#002395",
+    "couleur_secondaire": "#ED2939",
+    "drapeau": "🇫🇷",
+    "emoji": "🐓",
+    "surnom": "Les Bleus"
+  },
+  "espagne": {
+    "nom": "Espagne",
+    "couleurs_hsv": {
+      "principale": [[0, 150, 100], [10, 255, 255]],
+      "secondaire": [[20, 150, 100], [35, 255, 255]]
+    },
+    "couleur_hex": "#AA151B",
+    "couleur_secondaire": "#F1BF00",
+    "drapeau": "🇪🇸",
+    "emoji": "💃",
+    "surnom": "La Roja"
+  },
+  "portugal": {
+    "nom": "Portugal",
+    "couleurs_hsv": {
+      "principale": [[0, 150, 100], [10, 255, 255]],
+      "secondaire": [[55, 100, 100], [75, 255, 255]]
+    },
+    "couleur_hex": "#006600",
+    "couleur_secondaire": "#FF0000",
+    "drapeau": "🇵🇹",
+    "emoji": "🦅",
+    "surnom": "A Seleção"
+  },
+  "bresil": {
+    "nom": "Brésil",
+    "couleurs_hsv": {
+      "principale": [[20, 100, 100], [35, 255, 255]],
+      "secondaire": [[55, 100, 100], [75, 255, 255]]
+    },
+    "couleur_hex": "#FFDF00",
+    "couleur_secondaire": "#009C3B",
+    "drapeau": "🇧🇷",
+    "emoji": "🌟",
+    "surnom": "A Seleção Canarinha"
+  },
+  "argentine": {
+    "nom": "Argentine",
+    "couleurs_hsv": {
+      "principale": [[100, 80, 200], [130, 255, 255]],
+      "secondaire": [[0, 0, 200], [180, 30, 255]]
+    },
+    "couleur_hex": "#74ACDF",
+    "couleur_secondaire": "#FFFFFF",
+    "drapeau": "🇦🇷",
+    "emoji": "🏆",
+    "surnom": "La Albiceleste"
+  },
+  "allemagne": {
+    "nom": "Allemagne",
+    "couleurs_hsv": {
+      "principale": [[0, 0, 0], [180, 30, 50]],
+      "secondaire": [[0, 0, 200], [180, 30, 255]]
+    },
+    "couleur_hex": "#000000",
+    "couleur_secondaire": "#DD0000",
+    "drapeau": "🇩🇪",
+    "emoji": "🦅",
+    "surnom": "Die Mannschaft"
+  },
+  "angleterre": {
+    "nom": "Angleterre",
+    "couleurs_hsv": {
+      "principale": [[0, 0, 200], [180, 30, 255]],
+      "secondaire": [[0, 150, 100], [10, 255, 255]]
+    },
+    "couleur_hex": "#FFFFFF",
+    "couleur_secondaire": "#CF081F",
+    "drapeau": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    "emoji": "🦁",
+    "surnom": "Three Lions"
+  },
+  "senegal": {
+    "nom": "Sénégal",
+    "couleurs_hsv": {
+      "principale": [[0, 0, 200], [180, 30, 255]],
+      "secondaire": [[55, 100, 100], [75, 255, 255]]
+    },
+    "couleur_hex": "#FFFFFF",
+    "couleur_secondaire": "#00853F",
+    "drapeau": "🇸🇳",
+    "emoji": "🦁",
+    "surnom": "Lions de la Teranga"
+  },
+  "nigeria": {
+    "nom": "Nigeria",
+    "couleurs_hsv": {
+      "principale": [[55, 100, 100], [75, 255, 255]],
+      "secondaire": [[0, 0, 200], [180, 30, 255]]
+    },
+    "couleur_hex": "#008751",
+    "couleur_secondaire": "#FFFFFF",
+    "drapeau": "🇳🇬",
+    "emoji": "🦅",
+    "surnom": "Super Eagles"
+  },
+  "usa": {
+    "nom": "États-Unis",
+    "couleurs_hsv": {
+      "principale": [[0, 0, 200], [180, 30, 255]],
+      "secondaire": [[0, 150, 100], [10, 255, 255]]
+    },
+    "couleur_hex": "#FFFFFF",
+    "couleur_secondaire": "#B22234",
+    "drapeau": "🇺🇸",
+    "emoji": "🦅",
+    "surnom": "Team USA"
+  },
+  "japon": {
+    "nom": "Japon",
+    "couleurs_hsv": {
+      "principale": [[100, 150, 100], [130, 255, 255]],
+      "secondaire": [[0, 0, 200], [180, 30, 255]]
+    },
+    "couleur_hex": "#000080",
+    "couleur_secondaire": "#FFFFFF",
+    "drapeau": "🇯🇵",
+    "emoji": "⚡",
+    "surnom": "Samurai Blue"
+  },
+  "mexique": {
+    "nom": "Mexique",
+    "couleurs_hsv": {
+      "principale": [[55, 100, 100], [75, 255, 255]],
+      "secondaire": [[0, 0, 200], [180, 30, 255]]
+    },
+    "couleur_hex": "#006847",
+    "couleur_secondaire": "#FFFFFF",
+    "drapeau": "🇲🇽",
+    "emoji": "🦅",
+    "surnom": "El Tri"
+  },
+  "uruguay": {
+    "nom": "Uruguay",
+    "couleurs_hsv": {
+      "principale": [[100, 80, 150], [130, 255, 255]],
+      "secondaire": [[0, 0, 200], [180, 30, 255]]
+    },
+    "couleur_hex": "#5EB6E4",
+    "couleur_secondaire": "#FFFFFF",
+    "drapeau": "🇺🇾",
+    "emoji": "⚽",
+    "surnom": "La Celeste"
+  },
+  "belgique": {
+    "nom": "Belgique",
+    "couleurs_hsv": {
+      "principale": [[0, 150, 100], [10, 255, 255]],
+      "secondaire": [[0, 0, 0], [180, 255, 50]]
+    },
+    "couleur_hex": "#ED2939",
+    "couleur_secondaire": "#000000",
+    "drapeau": "🇧🇪",
+    "emoji": "👹",
+    "surnom": "Les Diables Rouges"
+  },
+  "pays_bas": {
+    "nom": "Pays-Bas",
+    "couleurs_hsv": {
+      "principale": [[10, 150, 100], [20, 255, 255]],
+      "secondaire": [[0, 0, 200], [180, 30, 255]]
+    },
+    "couleur_hex": "#FF6600",
+    "couleur_secondaire": "#FFFFFF",
+    "drapeau": "🇳🇱",
+    "emoji": "🌷",
+    "surnom": "Oranje"
+  }
+}

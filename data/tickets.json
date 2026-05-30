@@ -1,0 +1,15 @@
+{
+  "A101": {"zone":"Tribune Nord - Bloc A","rang":"Rang 1, Siège 01","porte":"Entrée 1 - Côté Nord","parking":"Parking Nord P1","buvette":"Buvette N1 - Rez-de-chaussée","vestiaire":"Vestiaire A - Niveau 0","hopital":"Poste Médical Nord"},
+  
+  "A102": {"zone":"Tribune Nord - Bloc A","rang":"Rang 1, Siège 02","porte":"Entrée 1 - Côté Nord","parking":"Parking Nord P1","buvette":"Buvette N1 - Rez-de-chaussée","vestiaire":"Vestiaire A - Niveau 0","hopital":"Poste Médical Nord"},
+  "A201": {"zone":"Tribune Nord - Bloc A","rang":"Rang 2, Siège 01","porte":"Entrée 1 - Côté Nord","parking":"Parking Nord P1","buvette":"Buvette N1 - Rez-de-chaussée","vestiaire":"Vestiaire A - Niveau 0","hopital":"Poste Médical Nord"},
+  "B101": {"zone":"Tribune Sud - Bloc B","rang":"Rang 1, Siège 01","porte":"Entrée 3 - Côté Sud","parking":"Parking Sud P2","buvette":"Buvette S1 - Rez-de-chaussée","vestiaire":"Vestiaire B - Niveau 0","hopital":"Poste Médical Sud"},
+  "B203": {"zone":"Tribune Sud - Bloc B","rang":"Rang 2, Siège 03","porte":"Entrée 3 - Côté Sud","parking":"Parking Sud P2","buvette":"Buvette S1 - Rez-de-chaussée","vestiaire":"Vestiaire B - Niveau 0","hopital":"Poste Médical Sud"},
+  "C101": {"zone":"Tribune Est - Bloc C","rang":"Rang 1, Siège 01","porte":"Entrée 5 - Côté Est","parking":"Parking Est P3","buvette":"Buvette E1 - Niveau 1","vestiaire":"Vestiaire C - Niveau 1","hopital":"Poste Médical Est"},
+  "C305": {"zone":"Tribune Est - Bloc C","rang":"Rang 3, Siège 05","porte":"Entrée 5 - Côté Est","parking":"Parking Est P3","buvette":"Buvette E1 - Niveau 1","vestiaire":"Vestiaire C - Niveau 1","hopital":"Poste Médical Est"},
+  "D101": {"zone":"Tribune Ouest - Bloc D","rang":"Rang 1, Siège 01","porte":"Entrée 6 - Côté Ouest","parking":"Parking Ouest P4","buvette":"Buvette O1 - Rez-de-chaussée","vestiaire":"Vestiaire D - Niveau 0","hopital":"Poste Médical Ouest"},
+  "D420": {"zone":"Tribune Ouest - Bloc D","rang":"Rang 4, Siège 20","porte":"Entrée 6 - Côté Ouest","parking":"Parking Ouest P4","buvette":"Buvette O1 - Rez-de-chaussée","vestiaire":"Vestiaire D - Niveau 0","hopital":"Poste Médical Ouest"},
+  "VIP01": {"zone":"Tribune Honneur - Loge VIP","rang":"Loge 1, Place 01","porte":"Entrée VIP - Côté Ouest","parking":"Parking VIP Réservé","buvette":"Salon VIP - Niveau 2","vestiaire":"Vestiaire VIP Privé","hopital":"Médecin de service VIP"},
+  "VIP02": {"zone":"Tribune Honneur - Loge VIP","rang":"Loge 1, Place 02","porte":"Entrée VIP - Côté Ouest","parking":"Parking VIP Réservé","buvette":"Salon VIP - Niveau 2","vestiaire":"Vestiaire VIP Privé","hopital":"Médecin de service VIP"},
+  "VIP03": {"zone":"Tribune Honneur - Loge VIP","rang":"Loge 2, Place 01","porte":"Entrée VIP - Côté Ouest","parking":"Parking VIP Réservé","buvette":"Salon VIP - Niveau 2","vestiaire":"Vestiaire VIP Privé","hopital":"Médecin de service VIP"}
+}
