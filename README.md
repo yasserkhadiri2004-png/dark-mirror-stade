@@ -204,21 +204,11 @@ ElevenLabs → MP3 → Avatar talking
 - [x] Assistant vocal ElevenLabs
 - [x] Validation ticket QR
 - [x] RAG Google Maps
-- [ ] Guide touristique Visit Morocco AI
-- [ ] Support arabe / anglais / espagnol
-- [ ] Déploiement cloud (Azure / AWS)
-- [ ] Multi-caméras
+
 
 ---
 
-## 🏆 Compétitions visées
 
-| Compétition | Date | Prix |
-|---|---|---|
-| RamadanIA Hackathon | Mars 2027 | Incubation nationale |
-| Prix Maroc Jeunesse | Mai 2027 | 200 000 MAD |
-| Microsoft Imagine Cup | Avril 2027 | 100 000 $ |
-| Google Solution Challenge | Avril 2027 | 10 000 $ |
 
 ---
 
