@@ -1,0 +1,36 @@
+# Environnement virtuel
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Modèles lourds (téléchargés automatiquement)
+data/deploy.prototxt
+data/res10_300x300_ssd_iter_140000.caffemodel
+data/maillots/
+
+# Audio générés
+static/sounds/*.mp3
+static/sounds/tests/
+
+# Variables d'environnement
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
